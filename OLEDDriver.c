@@ -5,8 +5,6 @@
  * @Project OLEDDriver
 */
 #include "OLEDDriver.h"
-#include <stdint.h>
-#include <memory.h>
 
 /**
  * OLED 写命令函数，作用于仅限于本文件

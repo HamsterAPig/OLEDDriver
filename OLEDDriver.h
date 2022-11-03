@@ -10,6 +10,8 @@
 #ifdef __cplusplus
     extern "C" {
 #endif // C++ Support
+#include <stdint.h>
+#include <memory.h>
 
 #define OLED_PHY_ADDRESS 0x78               // I2C 物理地址
 #define OLED_PIX_WIDTH 128                  // OLED屏幕横向像素
