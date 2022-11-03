@@ -72,10 +72,18 @@ OLED_StatusTypeDef OLED_SetPoint(uint8_t x, uint8_t y, uint8_t state);
 
 /**
  * 全屏填充
+ * @note 执行此函数会立即将修改同步到屏幕当中
  * @param state 0是清屏,1是点亮
  * @return OLED Status
  */
 OLED_StatusTypeDef OLED_Fill(uint8_t state);
+
+/**
+ * 清屏
+ * @note 执行此函数会立即将修改同步到屏幕当中
+ * @return
+ */
+OLED_StatusTypeDef OLED_Clear();
 
 #ifdef __cplusplus
 }
