@@ -5,6 +5,7 @@
  * @Project OLEDDriver
 */
 #include "OLEDDriver.h"
+#include "codetable.h"
 
 /**
  * OLED 写命令函数，作用于仅限于本文件
