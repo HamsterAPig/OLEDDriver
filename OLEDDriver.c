@@ -159,7 +159,6 @@ OLED_StatusTypeDef OLED_OFF() {
  * @return OLED Status
  */
 OLED_StatusTypeDef OLED_WriteCmd(uint8_t *pcmd, uint16_t total) {
-#ifdef __ENABLE_DMA_OLED
     /**
     * @note 拷贝一份原有数据防止函数退出后，pcmd指向的地址失效
     * @note 进而导致DMA发送数据异常
@@ -167,8 +166,5 @@ OLED_StatusTypeDef OLED_WriteCmd(uint8_t *pcmd, uint16_t total) {
     for (int i = 0; i < total; ++i)
         g_command_buffer[i] = pcmd[i];
     OLED_StatusTypeDef status = OLED_I2C_Transmit(OLED_PHY_ADDRESS, 0x00, g_command_buffer, total);
-#else
-    //Todo 这里写不用DMA传输的过程
-#endif
     return status;
 }
