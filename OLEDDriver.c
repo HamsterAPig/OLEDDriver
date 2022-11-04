@@ -105,6 +105,23 @@ OLED_StatusTypeDef OLED_ShowStr(uint8_t x, uint8_t y, uint8_t *pstr, uint8_t tex
                 pstr_index++;
             }
             break;
+        case 2:
+            while(pstr[pstr_index] != '\0'){
+                charter = pstr[pstr_index] - 32;
+                if (x > OLED_PIX_WIDTH - 8) {
+#if OLED_ENABLE_WRAP
+                    x = 0;
+                    y += 2;
+#endif
+                }
+                for (int i = 0; i < 8; ++i)
+                    g_oled_buffer[y][x + i] = F8X16[charter * 16 + i];
+                for (int i = 0; i < 8; ++i)
+                    g_oled_buffer[y + 1][x + i] = F8X16[charter * 16 + i + 8];
+                x += 8;
+                pstr_index++;
+            }
+            break;
     }
 }
 
