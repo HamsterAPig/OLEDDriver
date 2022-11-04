@@ -142,6 +142,16 @@ OLED_StatusTypeDef OLED_ShowStr(uint8_t x, uint8_t y, uint8_t *pstr, uint8_t tex
     }
 }
 
+OLED_StatusTypeDef OLED_ON() {
+    const uint8_t _ssd1306_on_parm[] = {0x8d,0x14,0xaf};
+    return OLED_WriteCmd((uint8_t *) _ssd1306_on_parm, 3);
+}
+
+OLED_StatusTypeDef OLED_OFF() {
+    const uint8_t _ssd1306_off_parm[] = {0x8d,0x10,0xae};
+    return OLED_WriteCmd((uint8_t *) _ssd1306_off_parm, 3);
+}
+
 /**
  * OLED 写命令函数，作用于仅限于本文件
  * @param pcmd 命令数组指针

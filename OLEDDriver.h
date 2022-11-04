@@ -97,6 +97,9 @@ OLED_StatusTypeDef OLED_Clear();
  */
 OLED_StatusTypeDef OLED_ShowStr(uint8_t x, uint8_t y, uint8_t* pstr, uint8_t text_size);
 
+OLED_StatusTypeDef OLED_ON();
+OLED_StatusTypeDef OLED_OFF();
+
 #ifdef __cplusplus
 }
 #endif // C++ Support
