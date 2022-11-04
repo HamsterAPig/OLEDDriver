@@ -31,8 +31,7 @@ typedef enum
 {
     OLED_OK       = 0x00U,
     OLED_ERROR    = 0x01U,
-    OLED_BUSY     = 0x02U,
-    OLED_TIMEOUT  = 0x03U
+    OLED_OUT_RANGE     = 0x02U,
 } OLED_StatusTypeDef;
 
 /**

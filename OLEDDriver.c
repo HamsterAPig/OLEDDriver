@@ -59,7 +59,7 @@ OLED_StatusTypeDef OLED_Reflush_GSRAM() {
 #define	CLEAR_BIT(x, bit)	(x &= ~(1 << bit))	/* 清零第bit位 */
 OLED_StatusTypeDef OLED_SetPoint(uint8_t x, uint8_t y, uint8_t state) {
     // 检查输入参数.超出范围自动返回错误
-    if (x >= OLED_PIX_WIDTH || y >= OLED_PIX_HEIGHT) return OLED_ERROR;
+    if (x >= OLED_PIX_WIDTH || y >= OLED_PIX_HEIGHT) return OLED_OUT_RANGE;
 
     uint8_t fill_data = y % 8;
     uint8_t old_data = g_oled_buffer[(y -fill_data) / 8][x];
@@ -110,6 +110,8 @@ OLED_StatusTypeDef OLED_ShowStr(uint8_t x, uint8_t y, uint8_t *pstr, uint8_t tex
 #if OLED_ENABLE_WRAP
                     x = 0;
                     y++;
+#else
+                    return OLED_OUT_RANGE;
 #endif
                 }
                 for (int i = 0; i < 6; ++i)
@@ -125,6 +127,8 @@ OLED_StatusTypeDef OLED_ShowStr(uint8_t x, uint8_t y, uint8_t *pstr, uint8_t tex
 #if OLED_ENABLE_WRAP
                     x = 0;
                     y += 2;
+#else
+                    return OLED_OUT_RANGE;
 #endif
                 }
                 for (int i = 0; i < 8; ++i)
