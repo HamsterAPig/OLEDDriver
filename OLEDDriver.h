@@ -3,35 +3,34 @@
  * @Author jinming xi
  * @Date 2022/11/3
  * @Project OLEDDriver
-*/
+ */
 
 #ifndef OLEDDRIVER_H
 #define OLEDDRIVER_H
 #ifdef __cplusplus
-    extern "C" {
-#endif // C++ Support
-#include <stdint.h>
+extern "C" {
+#endif  // C++ Support
 #include <memory.h>
+#include <stdint.h>
 
-#define OLED_PHY_ADDRESS 0x78               // I2C 物理地址
-#define OLED_PIX_WIDTH 128                  // OLED屏幕横向像素
-#define OLED_PIX_HEIGHT 64                  // OLED屏幕纵向像素
+#define OLED_PHY_ADDRESS 0x78  // I2C 物理地址
+#define OLED_PIX_WIDTH 128     // OLED屏幕横向像素
+#define OLED_PIX_HEIGHT 64     // OLED屏幕纵向像素
 
 #define OLED_PAGE_SIZE OLED_PIX_HEIGHT / 8  // OLED驱动存储页数
 
-#define OLED_COMMAND_BUFFER_LENGTH 32       // OLED 命令存储Buffer长度
+#define OLED_COMMAND_BUFFER_LENGTH 32  // OLED 命令存储Buffer长度
 #ifndef OLED_ENABLE_WRAP
-#define OLED_ENABLE_WRAP 1                  // 启用自动换行
+  #define OLED_ENABLE_WRAP 1  // 启用自动换行
 #endif
 
 /**
  * @brief 定义返回常量，方便调试的时候判断状态
  */
-typedef enum
-{
-    OLED_OK       = 0x00U,
-    OLED_ERROR    = 0x01U,
-    OLED_OUT_RANGE     = 0x02U,
+typedef enum {
+  OLED_OK = 0x00U,
+  OLED_ERROR = 0x01U,
+  OLED_OUT_RANGE = 0x02U,
 } OLED_StatusTypeDef;
 
 /**
@@ -95,12 +94,12 @@ OLED_StatusTypeDef OLED_Clear();
  * @param text_size 显示的大小
  * @return
  */
-OLED_StatusTypeDef OLED_ShowStr(uint8_t x, uint8_t y, uint8_t* pstr, uint8_t text_size);
+OLED_StatusTypeDef OLED_ShowStr(uint8_t x, uint8_t y, uint8_t *pstr, uint8_t text_size);
 
 OLED_StatusTypeDef OLED_ON();
 OLED_StatusTypeDef OLED_OFF();
 
 #ifdef __cplusplus
 }
-#endif // C++ Support
-#endif //OLEDDRIVER_H
+#endif  // C++ Support
+#endif  // OLEDDRIVER_H
