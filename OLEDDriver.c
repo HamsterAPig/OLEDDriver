@@ -106,7 +106,7 @@ OLED_StatusTypeDef OLED_ShowStr(uint8_t x, uint8_t y, uint8_t *pstr, uint8_t tex
         case 1:
             while(pstr[pstr_index] != '\0'){
                 charter = pstr[pstr_index] - 32;
-                if (x > OLED_PIX_HEIGHT - 2) {
+                if (x > OLED_PIX_WIDTH - 2) {
 #if OLED_ENABLE_WRAP
                     x = 0;
                     y++;
