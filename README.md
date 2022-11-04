@@ -36,3 +36,14 @@ void OLED_DelayMS(uint8_t ms) { HAL_Delay(ms); }
 ```
 
 3. 在主循环前初始化OLED，函数名为`OLED_Init()`
+
+## 编译器相关
+
+### Keil
+
+按照百度的方法把本仓库的源码添加到项目里面
+
+### CMakeLists.txt
+
+1. `add_subdirectory(path/OLEDDriver)`
+2. 在`add_executable`后面追加`target_link_libraries(${PROJECT_NAME}.elf PRIVATE OLEDDrive)`
