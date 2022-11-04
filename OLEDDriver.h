@@ -66,8 +66,8 @@ OLED_StatusTypeDef OLED_Reflush_GSRAM();
 
 /**
  * 点亮某一个点或者点灭某一个点
- * @param x 横坐标
- * @param y 纵坐标
+ * @param x 横坐标 0~横向像素 - 1
+ * @param y 纵坐标 0~纵向像素 - 1
  * @param state 点的状态，点亮为1，点灭为0
  * @return OLED Status
  */
@@ -90,8 +90,8 @@ OLED_StatusTypeDef OLED_Clear();
 
 /**
  * 字符串显示函数
- * @param x 横坐标
- * @param y 纵坐标
+ * @param x 横坐标 0 ~ 横向像素 - 1
+ * @param y 纵坐标 0 ~ 纵向页数 - 1
  * @param pstr 字符串指针
  * @param text_size 显示的大小
  * @return
