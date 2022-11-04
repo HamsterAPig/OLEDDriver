@@ -32,7 +32,7 @@ OLED_StatusTypeDef OLED_Init(void) {
                                           0x81,0xff,0xa1,0xa6,0xa8,0x3f,0xa4,
                                           0xd3,0x00,0xd5,0xf0,0xd9,0x22,0xda,
                                           0x12,0xdb,0x20,0x8d,0x14,0xaf};
-    return OLED_WriteCmd(_ssd1306_init_parm, 28);
+    return OLED_WriteCmd((uint8_t *)_ssd1306_init_parm, 28);
 }
 
 /**
@@ -42,9 +42,9 @@ OLED_StatusTypeDef OLED_Init(void) {
 OLED_StatusTypeDef OLED_Reflush_GSRAM() {
     OLED_StatusTypeDef status;
     const uint8_t _ssd1306_write_command_parm[] = {0xb0,0x00,0x10};
-    status = OLED_WriteCmd(_ssd1306_write_command_parm, 3);
+    status = OLED_WriteCmd((uint8_t *)_ssd1306_write_command_parm, 3);
     if (status != OLED_OK) return status;
-    status = OLED_I2C_Transmit(OLED_PHY_ADDRESS, 0x40, g_oled_buffer, OLED_PIX_WIDTH * OLED_PAGE_SIZE);
+    status = OLED_I2C_Transmit(OLED_PHY_ADDRESS, 0x40, (uint8_t *)g_oled_buffer, OLED_PIX_WIDTH * OLED_PAGE_SIZE);
     return status;
 }
 
@@ -93,12 +93,12 @@ OLED_StatusTypeDef OLED_ShowStr(uint8_t x, uint8_t y, uint8_t *pstr, uint8_t tex
         case 1:
             while(pstr[pstr_index] != '\0'){
                 charter = pstr[pstr_index] - 32;
-#if OLED_ENABLE_WRAP
                 if (x > OLED_PIX_HEIGHT - 2) {
+#if OLED_ENABLE_WRAP
                     x = 0;
                     y++;
-                }
 #endif
+                }
                 for (int i = 0; i < 6; ++i)
                     g_oled_buffer[y][x + i] = F6x8[charter][i];
                 x += 6;
