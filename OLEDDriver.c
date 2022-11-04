@@ -100,7 +100,7 @@ OLED_StatusTypeDef OLED_ShowStr(uint8_t x, uint8_t y, uint8_t *pstr, uint8_t tex
                 }
 #endif
                 for (int i = 0; i < 6; ++i)
-                    g_oled_buffer[y][x] = F6x8[charter][i];
+                    g_oled_buffer[y][x + i] = F6x8[charter][i];
                 x += 6;
                 pstr_index++;
             }
