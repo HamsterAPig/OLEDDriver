@@ -44,6 +44,9 @@ OLED_StatusTypeDef OLED_Reflush_GSRAM()
   OLED_StatusTypeDef status;
   const uint8_t _ssd1306_write_command_parm[] = {0xb0, 0x00, 0x10};
   status = OLED_WriteCmd((uint8_t *)_ssd1306_write_command_parm, 3);
+#if OLED_NO_WAIT_TRANSMIS_PROCESS
+  OLED_DelayMS(1);
+#endif
   if (status != OLED_OK) return status;
   status = OLED_I2C_Transmit(OLED_PHY_ADDRESS, 0x40, (uint8_t *)g_oled_buffer, OLED_PIX_WIDTH * OLED_PAGE_SIZE);
   return status;
@@ -167,5 +170,8 @@ OLED_StatusTypeDef OLED_WriteCmd(uint8_t *pcmd, uint16_t total)
    */
   for (int i = 0; i < total; ++i) g_command_buffer[i] = pcmd[i];
   OLED_StatusTypeDef status = OLED_I2C_Transmit(OLED_PHY_ADDRESS, 0x00, g_command_buffer, total);
+#if OLED_NO_WAIT_TRANSMIS_PROCESS
+  OLED_DelayMS(1);
+#endif
   return status;
 }

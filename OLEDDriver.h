@@ -24,6 +24,11 @@ extern "C" {
   #define OLED_ENABLE_WRAP 1  // 启用自动换行
 #endif
 
+#ifndef OLED_NO_WAIT_TRANSMIS_PROCESS
+  #define OLED_NO_WAIT_TRANSMIS_PROCESS 1
+void OLED_DelayMS(uint8_t ms);
+#endif
+
 /**
  * @brief 定义返回常量，方便调试的时候判断状态
  */
