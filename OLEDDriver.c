@@ -32,7 +32,6 @@ OLED_StatusTypeDef OLED_Init(void) {
                                           0x81,0xff,0xa1,0xa6,0xa8,0x3f,0xa4,
                                           0xd3,0x00,0xd5,0xf0,0xd9,0x22,0xda,
                                           0x12,0xdb,0x20,0x8d,0x14,0xaf};
-
 }
 
 /**
@@ -84,6 +83,28 @@ OLED_StatusTypeDef OLED_Fill(uint8_t state) {
 
 OLED_StatusTypeDef OLED_Clear() {
     return OLED_Fill(0x00);
+}
+
+OLED_StatusTypeDef OLED_ShowStr(uint8_t x, uint8_t y, uint8_t *pstr, uint8_t text_size) {
+    uint8_t pstr_index = 0;
+    uint8_t charter = 0;
+    switch(text_size){
+        case 1:
+            while(pstr[pstr_index] != '\0'){
+                charter = pstr[pstr_index] - 32;
+#if OLED_ENABLE_WRAP
+                if (x > OLED_PIX_HEIGHT - 2) {
+                    x = 0;
+                    y++;
+                }
+#endif
+                for (int i = 0; i < 6; ++i)
+                    g_oled_buffer[y][x] = F6x8[charter][i];
+                x += 6;
+                pstr_index++;
+            }
+            break;
+    }
 }
 
 /**

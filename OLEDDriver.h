@@ -20,6 +20,9 @@
 #define OLED_PAGE_SIZE OLED_PIX_HEIGHT / 8  // OLED驱动存储页数
 
 #define OLED_COMMAND_BUFFER_LENGTH 32       // OLED 命令存储Buffer长度
+#ifndef OLED_ENABLE_WRAP
+#define OLED_ENABLE_WRAP 1                  // 启用自动换行
+#endif
 
 /**
  * @brief 定义返回常量，方便调试的时候判断状态
@@ -84,6 +87,16 @@ OLED_StatusTypeDef OLED_Fill(uint8_t state);
  * @return
  */
 OLED_StatusTypeDef OLED_Clear();
+
+/**
+ * 字符串显示函数
+ * @param x 横坐标
+ * @param y 纵坐标
+ * @param pstr 字符串指针
+ * @param text_size 显示的大小
+ * @return
+ */
+OLED_StatusTypeDef OLED_ShowStr(uint8_t x, uint8_t y, uint8_t* pstr, uint8_t text_size);
 
 #ifdef __cplusplus
 }
