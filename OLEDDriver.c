@@ -5,7 +5,10 @@
  * @Project OLEDDriver
  */
 #include "OLEDDriver.h"
+#include "OLEDDriverParam.h"
 #include "codetable.h"
+
+#define CALC_NUM_LENGTH(x) sizeof(x) / sizeof(uint8_t)
 
 /**
  * OLED 写命令函数，作用于仅限于本文件
@@ -29,10 +32,7 @@ uint8_t g_command_buffer[OLED_COMMAND_BUFFER_LENGTH];
  */
 OLED_StatusTypeDef OLED_Init(void)
 {
-  const uint8_t _ssd1306_init_parm[] = {0xae, 0x20, 0x00, 0xb0, 0xc8, 0x00, 0x10, 0x40, 0x81, 0xff,
-                                        0xa1, 0xa6, 0xa8, 0x3f, 0xa4, 0xd3, 0x00, 0xd5, 0xf0, 0xd9,
-                                        0x22, 0xda, 0x12, 0xdb, 0x20, 0x8d, 0x14, 0xaf};
-  return OLED_WriteCmd((uint8_t *)_ssd1306_init_parm, 28);
+  return OLED_WriteCmd((uint8_t *)__oled_init_param, CALC_NUM_LENGTH(__oled_init_param));
 }
 
 /**
@@ -42,8 +42,7 @@ OLED_StatusTypeDef OLED_Init(void)
 OLED_StatusTypeDef OLED_Reflush_GSRAM()
 {
   OLED_StatusTypeDef status;
-  const uint8_t _ssd1306_write_command_parm[] = {0xb0, 0x00, 0x10};
-  status = OLED_WriteCmd((uint8_t *)_ssd1306_write_command_parm, 3);
+  status = OLED_WriteCmd((uint8_t *)__oled_write_command_param, CALC_NUM_LENGTH(__oled_write_command_param));
 #if OLED_NO_WAIT_TRANSMIS_PROCESS
   OLED_DelayMS(1);
 #endif
@@ -144,17 +143,9 @@ OLED_StatusTypeDef OLED_ShowStr(uint8_t x, uint8_t y, uint8_t *pstr, uint8_t tex
   }
 }
 
-OLED_StatusTypeDef OLED_ON()
-{
-  const uint8_t _ssd1306_on_parm[] = {0x8d, 0x14, 0xaf};
-  return OLED_WriteCmd((uint8_t *)_ssd1306_on_parm, 3);
-}
+OLED_StatusTypeDef OLED_ON() { return OLED_WriteCmd((uint8_t *)__oled_on_pararm, CALC_NUM_LENGTH(__oled_on_pararm)); }
 
-OLED_StatusTypeDef OLED_OFF()
-{
-  const uint8_t _ssd1306_off_parm[] = {0x8d, 0x10, 0xae};
-  return OLED_WriteCmd((uint8_t *)_ssd1306_off_parm, 3);
-}
+OLED_StatusTypeDef OLED_OFF() { return OLED_WriteCmd((uint8_t *)__oled_off_param, CALC_NUM_LENGTH(__oled_off_param)); }
 
 /**
  * OLED 写命令函数，作用于仅限于本文件

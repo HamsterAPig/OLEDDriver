@@ -19,7 +19,6 @@ extern "C" {
 
 #define OLED_PAGE_SIZE OLED_PIX_HEIGHT / 8  // OLED驱动存储页数
 
-#define OLED_COMMAND_BUFFER_LENGTH 32  // OLED 命令存储Buffer长度
 #ifndef OLED_ENABLE_WRAP
   #define OLED_ENABLE_WRAP 1  // 启用自动换行
 #endif
