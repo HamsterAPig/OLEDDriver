@@ -23,6 +23,19 @@ extern "C" {
 void OLED_DelayMS(uint8_t ms);
 #endif
 
+//#define OLED_TRANSMIT_SPI_4
+#ifdef OLED_TRANSMIT_SPI_4
+/**
+ * 操作数据选择的IO
+ * @param state 0表示拉低,1表示拉高
+ */
+void OLED_setGPIO_DC(uint8_t state);
+/**
+ * 操作片选的IO
+ * @param state 0表示选中
+ */
+void OLED_setGPIO_CS(uint8_t state);
+#endif
 /**
  * @brief 定义返回常量，方便调试的时候判断状态
  */

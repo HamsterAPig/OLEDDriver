@@ -47,7 +47,14 @@ OLED_StatusTypeDef OLED_Reflush_GSRAM()
   OLED_DelayMS(1);
 #endif
   if (status != OLED_OK) return status;
+#ifdef OLED_TRANSMIT_SPI_4
+  OLED_setGPIO_CS(0);
+  OLED_setGPIO_DC(1);
+#endif
   status = OLED_I2C_Transmit(OLED_PHY_ADDRESS, 0x40, (uint8_t *)g_oled_buffer, OLED_PIX_WIDTH * OLED_PAGE_SIZE);
+#ifdef OLED_TRANSMIT_SPI_4
+  OLED_setGPIO_CS(1);
+#endif
   return status;
 }
 
@@ -155,6 +162,10 @@ OLED_StatusTypeDef OLED_OFF() { return OLED_WriteCmd((uint8_t *)__oled_off_param
  */
 OLED_StatusTypeDef OLED_WriteCmd(uint8_t *pcmd, uint16_t total)
 {
+#ifdef OLED_TRANSMIT_SPI_4
+  OLED_setGPIO_CS(0);
+  OLED_setGPIO_DC(0);
+#endif
   /**
    * @note 拷贝一份原有数据防止函数退出后，pcmd指向的地址失效
    * @note 进而导致DMA发送数据异常
@@ -163,6 +174,9 @@ OLED_StatusTypeDef OLED_WriteCmd(uint8_t *pcmd, uint16_t total)
   OLED_StatusTypeDef status = OLED_I2C_Transmit(OLED_PHY_ADDRESS, 0x00, g_command_buffer, total);
 #if OLED_NO_WAIT_TRANSMIT_PROCESS
   OLED_DelayMS(1);
+#endif
+#ifdef OLED_TRANSMIT_SPI_4
+  OLED_setGPIO_CS(1);
 #endif
   return status;
 }
