@@ -68,7 +68,7 @@ OLED_StatusTypeDef OLED_Reflush_GSRAM();
  * @param state 点的状态，点亮为1，点灭为0
  * @return OLED Status
  */
-OLED_StatusTypeDef OLED_SetPoint(uint8_t x, uint8_t y, uint8_t state);
+OLED_StatusTypeDef OLED_setPoint(uint8_t x, uint8_t y, uint8_t state);
 
 /**
  * 全屏填充

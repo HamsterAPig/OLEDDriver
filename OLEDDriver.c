@@ -60,7 +60,7 @@ OLED_StatusTypeDef OLED_Reflush_GSRAM()
  */
 #define SET_BIT(REG, BIT) ((REG) |= (BIT))
 #define CLEAR_BIT(x, bit) (x &= ~(1 << bit)) /* 清零第bit位 */
-OLED_StatusTypeDef OLED_SetPoint(uint8_t x, uint8_t y, uint8_t state)
+OLED_StatusTypeDef OLED_setPoint(uint8_t x, uint8_t y, uint8_t state)
 {
   // 检查输入参数.超出范围自动返回错误
   if (x >= OLED_PIX_WIDTH || y >= OLED_PIX_HEIGHT) return OLED_OUT_RANGE;
