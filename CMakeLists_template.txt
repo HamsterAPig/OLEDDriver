@@ -7,7 +7,7 @@ add_compile_definitions(__USING_SSD1306)
 # 一行长度不够的时候启用自动换行
 add_compile_definitions(OLED_ENABLE_WRAP)
 # 等待传输完成
-add_compile_definitions(OLED_NO_WAIT_TRANSMIS_PROCESS)
+add_compile_definitions(OLED_NO_WAIT_TRANSMIT_PROCESS)
 
 add_library(${PROJECT_NAME})
 target_sources(${PROJECT_NAME}

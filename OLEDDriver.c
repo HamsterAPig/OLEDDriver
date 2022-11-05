@@ -43,7 +43,7 @@ OLED_StatusTypeDef OLED_Reflush_GSRAM()
 {
   OLED_StatusTypeDef status;
   status = OLED_WriteCmd((uint8_t *)__oled_write_command_param, CALC_NUM_LENGTH(__oled_write_command_param));
-#if OLED_NO_WAIT_TRANSMIS_PROCESS
+#if OLED_NO_WAIT_TRANSMIT_PROCESS
   OLED_DelayMS(1);
 #endif
   if (status != OLED_OK) return status;
@@ -161,7 +161,7 @@ OLED_StatusTypeDef OLED_WriteCmd(uint8_t *pcmd, uint16_t total)
    */
   for (int i = 0; i < total; ++i) g_command_buffer[i] = pcmd[i];
   OLED_StatusTypeDef status = OLED_I2C_Transmit(OLED_PHY_ADDRESS, 0x00, g_command_buffer, total);
-#if OLED_NO_WAIT_TRANSMIS_PROCESS
+#if OLED_NO_WAIT_TRANSMIT_PROCESS
   OLED_DelayMS(1);
 #endif
   return status;
