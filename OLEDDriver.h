@@ -19,12 +19,7 @@ extern "C" {
 
 #define OLED_PAGE_SIZE OLED_PIX_HEIGHT / 8  // OLED驱动存储页数
 
-#ifndef OLED_ENABLE_WRAP
-  #define OLED_ENABLE_WRAP 1  // 启用自动换行
-#endif
-
-#ifndef OLED_NO_WAIT_TRANSMIS_PROCESS
-  #define OLED_NO_WAIT_TRANSMIS_PROCESS 1
+#ifdef OLED_NO_WAIT_TRANSMIS_PROCESS
 void OLED_DelayMS(uint8_t ms);
 #endif
 
