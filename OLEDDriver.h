@@ -66,7 +66,7 @@ OLED_StatusTypeDef OLED_Init(void);
  * @param Size 数据长度
  * @return OLED Status
  */
-OLED_StatusTypeDef OLED_I2C_Transmit(uint16_t DevAddress, uint16_t MemAddress, uint8_t *pData, uint16_t Size);
+OLED_StatusTypeDef OLED_Transmit(uint16_t DevAddress, uint16_t MemAddress, uint8_t *pData, uint16_t Size);
 
 /**
  * 将g_oled_buffer里面的内容更新到屏幕中

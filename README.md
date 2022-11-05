@@ -18,7 +18,7 @@
 2. 在`main.c`的`USER CODE 4 BEGIN`这里添加以下代码段，其实就是定义了传输函数以及延时函数，宏定义是关于是否等待的开关
 
 ```C
-OLED_StatusTypeDef OLED_I2C_Transmit(uint16_t DevAddress, uint16_t MemAddress, uint8_t *pData, uint16_t Size)
+OLED_StatusTypeDef OLED_Transmit(uint16_t DevAddress, uint16_t MemAddress, uint8_t *pData, uint16_t Size)
 {
   HAL_StatusTypeDef I2C_State;
 #ifndef OLED_NO_WAIT_TRANSMIS_PROCESS
