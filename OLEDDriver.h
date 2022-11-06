@@ -40,6 +40,8 @@ void OLED_setGPIO_DC(uint8_t state);
 void OLED_setGPIO_CS(uint8_t state);
 #endif
 
+#define OLED_TRANSMIT_SPI_4
+#define OLED_USING_DMA_TRANSMIT
 #ifdef OLED_TRANSMIT_SPI_4
 #  define OLED_TRANSMIT_MODE_SPI
 #endif

@@ -76,18 +76,21 @@ OLED_StatusTypeDef OLED_Refresh_GSRAM()
 #  ifdef OLED_USING_DMA_TRANSMIT
   gb_call_refresh = 1;
   if (0 == g_call_refresh_count % 2) {
-    uint8_t _page_param[] = {0xb0 + g_call_refresh_count, 0x00, 0x10};
-    OLED_WriteCmd(_page_param, CALC_NUM_LENGTH(_page_param));
-  } else
-    status = OLED_Transmit(OLED_PHY_ADDRESS, 0x40, (uint8_t *)g_oled_buffer, OLED_PIX_WIDTH * OLED_PAGE_SIZE);
+    uint8_t oled_write_param[CALC_NUM_LENGTH(__oled_write_param)];
+    for (int i = 0; i < CALC_NUM_LENGTH(__oled_write_param); ++i) oled_write_param[i] = __oled_write_param[i];
+    oled_write_param[0] += g_call_refresh_count / 2;
+    OLED_WriteCmd(oled_write_param, CALC_NUM_LENGTH(oled_write_param));
+  } else {
+    status =
+      OLED_Transmit(OLED_PHY_ADDRESS, 0x40, (uint8_t *)g_oled_buffer[(g_call_refresh_count - 1) / 2], OLED_PIX_WIDTH);
+  }
 #  else
   /**
    * @note 按页写
    * @note 为了方便后期写参数，这里对原来的参数数组进行了拷贝
    */
   uint8_t oled_write_param[CALC_NUM_LENGTH(__oled_write_param)];
-  for (int i = 0; i  < CALC_NUM_LENGTH(__oled_write_param); ++i)
-    oled_write_param[i] = __oled_write_param[i];
+  for (int i = 0; i < CALC_NUM_LENGTH(__oled_write_param); ++i) oled_write_param[i] = __oled_write_param[i];
 
   for (int i = 0; i < OLED_PAGE_SIZE; ++i) {
     OLED_WriteCmd(oled_write_param, CALC_NUM_LENGTH(oled_write_param));
@@ -97,7 +100,7 @@ OLED_StatusTypeDef OLED_Refresh_GSRAM()
   }
 #  endif
 
-#  ifdef OLED_TRANSMIT_MODE_SPI
+#  ifndef OLED_USING_DMA_TRANSMIT
   OLED_setGPIO_CS(1);
 #  endif
   return status;
@@ -109,10 +112,10 @@ OLED_StatusTypeDef OLED_Refresh_GSRAM()
  */
 void OLED_DMA_TxCpltback()
 {
-  if (1 == gb_call_refresh) {
-    g_call_refresh_count++;
+  if (1 == gb_call_refresh && g_call_refresh_count / 2 < OLED_PAGE_SIZE) {
     OLED_Refresh_GSRAM();
-  } else if (OLED_PAGE_SIZE * 2 == g_call_refresh_count) {
+    g_call_refresh_count++;
+  } else {
     g_call_refresh_count = 0;
     gb_call_refresh = 0;
   }
@@ -239,7 +242,7 @@ OLED_StatusTypeDef OLED_WriteCmd(uint8_t *pcmd, uint16_t total)
 #ifdef OLED_NO_WAIT_TRANSMIT_PROCESS
   OLED_DelayMS(1);
 #endif
-#ifdef OLED_TRANSMIT_MODE_SPI
+#ifndef OLED_USING_DMA_TRANSMIT
   OLED_setGPIO_CS(1);
 #endif
   return status;
