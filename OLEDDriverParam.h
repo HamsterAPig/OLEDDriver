@@ -32,7 +32,6 @@ const uint8_t __oled_init_param[] = {0xae,        // 关闭显示屏
                                      0xdb, 0x10,  // Set V COMH Deselect Level
                                      0x22, 0x00, 0x07,  // 设置页的起始地址和结束地址
                                      0xaf};
-const uint8_t __oled_write_command_param[] = {0xb0, 0x00, 0x10};
 #  else
 const uint8_t __oled_init_param[] = {0xae,        // 关闭显示屏
                                      0xc8,        // 0x09 上下反置，0xc8正常

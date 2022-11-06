@@ -26,7 +26,7 @@ OLED_StatusTypeDef OLED_WriteCmd(uint8_t *pcmd, uint16_t total);
 uint8_t g_oled_buffer[OLED_PAGE_SIZE][OLED_PIX_WIDTH];
 uint8_t g_command_buffer[OLED_COMMAND_BUFFER_LENGTH];
 #ifdef OLED_USING_DMA_TRANSMIT
-uint8_t g_buffer_page = 0;
+uint8_t g_call_refresh_count = 0;
 uint8_t gb_call_refresh = 0;
 #endif
 
@@ -43,34 +43,73 @@ OLED_StatusTypeDef OLED_Init(void)
  * 将g_oled_buffer里面的内容更新到屏幕中
  * @return OLED Status
  */
-#ifndef OLED_USING_DMA_TRANSMIT
+#ifndef OLED_USING_PAGE_MODE
 OLED_StatusTypeDef OLED_Refresh_GSRAM()
 {
   OLED_StatusTypeDef status;
-#ifdef OLED_NO_WAIT_TRANSMIT_PROCESS
+#  ifdef OLED_NO_WAIT_TRANSMIT_PROCESS
   OLED_DelayMS(1);
-#endif
-#ifdef OLED_TRANSMIT_MODE_SPI
-  OLED_setGPIO_CS(0);
-#  ifdef OLED_TRANSMIT_SPI_4
-  OLED_setGPIO_DC(1);
 #  endif
-#endif
+#  ifdef OLED_TRANSMIT_MODE_SPI
+  OLED_setGPIO_CS(0);
+#    ifdef OLED_TRANSMIT_SPI_4
+  OLED_setGPIO_DC(1);
+#    endif
+#  endif
   status = OLED_Transmit(OLED_PHY_ADDRESS, 0x40, (uint8_t *)g_oled_buffer, OLED_PIX_WIDTH * OLED_PAGE_SIZE);
-#ifdef OLED_TRANSMIT_MODE_SPI
+#  ifdef OLED_TRANSMIT_MODE_SPI
   OLED_setGPIO_CS(1);
-#endif
+#  endif
   return status;
 }
 #else
 OLED_StatusTypeDef OLED_Refresh_GSRAM()
 {
+#  ifdef OLED_TRANSMIT_MODE_SPI
+  OLED_setGPIO_CS(0);
+#    ifdef OLED_TRANSMIT_SPI_4
+  OLED_setGPIO_DC(1);
+#    endif
+#  endif
+
   OLED_StatusTypeDef status;
+#  ifdef OLED_USING_DMA_TRANSMIT
+  gb_call_refresh = 1;
+  if (0 == g_call_refresh_count % 2) {
+    uint8_t _page_param[] = {0xb0 + g_call_refresh_count, 0x00, 0x10};
+    OLED_WriteCmd(_page_param, CALC_NUM_LENGTH(_page_param));
+  } else
+    status = OLED_Transmit(OLED_PHY_ADDRESS, 0x40, (uint8_t *)g_oled_buffer, OLED_PIX_WIDTH * OLED_PAGE_SIZE);
+#  else
+  for (int i = 0; i < OLED_PAGE_SIZE; ++i) {
+    uint8_t _page_param[] = {0xb0 + i, 0x00, 0x10};
+    OLED_WriteCmd(_page_param, CALC_NUM_LENGTH(_page_param));
+    uint8_t  *ptemp = g_oled_buffer[i];
+    status = OLED_Transmit(OLED_PHY_ADDRESS, 0x40, (uint8_t *)ptemp, OLED_PIX_WIDTH);
+  }
+#  endif
+
+#  ifdef OLED_TRANSMIT_MODE_SPI
+  OLED_setGPIO_CS(1);
+#  endif
+  return status;
 }
+#  ifdef OLED_USING_DMA_TRANSMIT
+/**
+ * 为了尽可能的降低对CPU的占用
+ * 这里使用DMA传输完成回调，请把下面这个函数放到DMA完成回调里面调用
+ */
 void OLED_DMA_TxCpltback()
 {
-
+  if (1 == gb_call_refresh) {
+    g_call_refresh_count++;
+    OLED_Refresh_GSRAM();
+  } else if (OLED_PAGE_SIZE * 2 == g_call_refresh_count) {
+    g_call_refresh_count = 0;
+    gb_call_refresh = 0;
+  }
 }
+#  endif
 #endif
 
 /**
