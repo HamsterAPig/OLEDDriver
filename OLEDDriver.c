@@ -47,7 +47,7 @@ OLED_StatusTypeDef OLED_Refresh_GSRAM()
 {
   OLED_Refresh_GSRAM_CallBefore();
   OLED_StatusTypeDef status;
-  status = OLED_Transmit(OLED_PHY_ADDRESS, 0x40, (uint8_t *)g_oled_buffer, OLED_PIX_WIDTH * OLED_PAGE_SIZE);
+  status = OLED_Transmit(OLED_PHY_ADDRESS, 0x40, (uint8_t *)g_oled_buffer, OLED_PIX_WIDTH * OLED_PAGE_SIZE, 1);
   OLED_Refresh_GSRAM_CallAfter();
   return status;
 }
@@ -162,7 +162,7 @@ OLED_StatusTypeDef OLED_WriteCmd(uint8_t *pcmd, uint16_t total)
    * @note 进而导致DMA发送数据异常
    */
   for (int i = 0; i < total; ++i) g_command_buffer[i] = pcmd[i];
-  OLED_StatusTypeDef status = OLED_Transmit(OLED_PHY_ADDRESS, 0x00, g_command_buffer, total);
+  OLED_StatusTypeDef status = OLED_Transmit(OLED_PHY_ADDRESS, 0x00, g_command_buffer, total, 0);
   OLED_WriteCmd_CallAfter();
   return status;
 }

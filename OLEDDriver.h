@@ -52,9 +52,10 @@ OLED_StatusTypeDef OLED_Init(void);
  * @param MemAddress 内存地址
  * @param pData 数据指针
  * @param Size 数据长度
+ * @param mode 传输模式:0->命令;1->数据
  * @return OLED Status
  */
-OLED_StatusTypeDef OLED_Transmit(uint16_t DevAddress, uint16_t MemAddress, uint8_t *pData, uint16_t Size);
+OLED_StatusTypeDef OLED_Transmit(uint16_t DevAddress, uint16_t MemAddress, uint8_t *pData, uint16_t Size, uint8_t mode);
 
 /**
  * 将g_oled_buffer里面的内容更新到屏幕中
