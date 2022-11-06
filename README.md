@@ -15,48 +15,46 @@
 
 > 这里采用`STM32`下的`HAL`库作为说明，这里默认你已经正确配置并连接了相关总线
 
-1. 在`main.h`引入头文件
-2. 在`main.c`的`USER CODE 4 BEGIN`这里添加以下代码段，其实就是定义了传输函数以及延时函数，宏定义是关于是否等待的开关
+### 不启用DMA
 
-```C
-OLED_StatusTypeDef OLED_Transmit(uint16_t DevAddress, uint16_t MemAddress, uint8_t *pData, uint16_t Size)
+1. 包含本项目头文件`OLEDDriver.h`
+2. 在外设初始化函数调用的后面加上`OLED_Init()`以便初始化`OLED`
+3. 项目定义全局宏变量，其作用位置在`OLEDDriverParam.h`文件中，相关宏如下
+   * `__USING_SSD1306`: 使用SH1106驱动相关参数
+4. 用户实现一些相关的前后调用函数，如下
+
+```c
+void OLED_WriteCmd_CallAfter() { HAL_Delay(1); }
+void OLED_Refresh_GSRAM_CallAfter() { HAL_Delay(1); }
+```
+
+5. 用户实现I2C传输函数，如下
+
+```c
+OLED_StatusTypeDef OLED_Transmit(uint16_t DevAddress, uint16_t MemAddress, uint8_t *pData, uint16_t Size, uint8_t mode)
 {
-  HAL_StatusTypeDef I2C_State;
-#ifndef OLED_NO_WAIT_TRANSMIS_PROCESS
-  do {
-#endif
-    I2C_State = HAL_I2C_Mem_Write_DMA(&hi2c1, DevAddress, MemAddress, I2C_MEMADD_SIZE_8BIT, pData, Size);
-#ifndef OLED_NO_WAIT_TRANSMIS_PROCESS
-  } while (I2C_State == HAL_BUSY);
-#endif
-  return OLED_OK;
+  HAL_I2C_Mem_Write(&hi2c1, DevAddress, MemAddress, I2C_MEMADD_SIZE_8BIT, pData, Size, 0xff);
 }
-#ifdef OLED_NO_WAIT_TRANSMIS_PROCESS
-void OLED_DelayMS(uint8_t ms) { HAL_Delay(ms); }
-#endif
 ```
 
-3. 在主循环前初始化OLED，函数名为`OLED_Init()`
-3. 把目录下的`oled_user_def_template.h`重命名为`oled_user_def.h`，选择对应驱动即可，这里用`SSD1306`作为示范，以下内容就是启用`DMA`传输的`I2C`操作示范
 
-```
-#define __USING_SSD1306
 
-#define OLED_ENABLE_WRAP
-#define OLED_USING_DMA_TRANSMIT
-
-```
+至此，I2C普通驱动移植完毕
 
 ## SPI
 
 ### 不启用DMA
 
 1. 包含本项目头文件`OLEDDriver.h`
-2. 在外设初始化函数调用的后面加上`OLED_Init()`以便初始化`OLED`
+2. 项目定义全局宏变量，其作用位置在`OLEDDriverParam.h`文件中，相关宏如下
+   * `__USING_SH1106`: 使用SH1106驱动相关参数
+   * `OLED_USING_PAGE_MODE`: 使用页地址模式
+
+3. 在外设初始化函数调用的后面加上`OLED_Init()`以便初始化`OLED`
 
 > 注意：为了保证设备总线能够及时把初始化数据发送出去，这里必须予以一定的延时，一般给100ms
 
-3. 用户自己实现一些前调函数，相关函数如下
+4. 用户自己实现一些前调函数，相关函数如下
 
 ```C
 void OLED_WriteCmd_CallBefore()
