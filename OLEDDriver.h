@@ -12,41 +12,18 @@ extern "C" {
 #endif  // C++ Support
 #include <memory.h>
 #include <stdint.h>
-#include "oled_user_def.h"
 
 #ifndef OLED_PHY_ADDRESS
-#define OLED_PHY_ADDRESS 0x78  // I2C 物理地址
+#  define OLED_PHY_ADDRESS 0x78  // I2C 物理地址
 #endif
 #ifndef OLED_PIX_WIDTH
-#define OLED_PIX_WIDTH 128     // OLED屏幕横向像素
+#  define OLED_PIX_WIDTH 128  // OLED屏幕横向像素
 #endif
 #ifndef OLED_PIX_HEIGHT
-#define OLED_PIX_HEIGHT 64     // OLED屏幕纵向像素
+#  define OLED_PIX_HEIGHT 64  // OLED屏幕纵向像素
 #endif
 #define OLED_PAGE_SIZE OLED_PIX_HEIGHT / 8  // OLED驱动存储页数
 
-#ifdef OLED_NO_WAIT_TRANSMIT_PROCESS
-void OLED_DelayMS(uint8_t ms);
-#endif
-
-#ifdef OLED_TRANSMIT_MODE_SPI
-/**
- * 操作数据选择的IO
- * @param state 0表示拉低,1表示拉高
- */
-void OLED_setGPIO_DC(uint8_t state);
-/**
- * 操作片选的IO
- * @param state 0表示选中
- */
-void OLED_setGPIO_CS(uint8_t state);
-#endif
-
-#ifdef OLED_TRANSMIT_MODE_SPI
-#  ifdef OLED_USING_DMA_TRANSMIT
-void OLED_DMA_TxCpltback();
-#  endif
-#endif
 /**
  * @brief 定义返回常量，方便调试的时候判断状态
  */
@@ -121,6 +98,12 @@ OLED_StatusTypeDef OLED_ShowStr(uint8_t x, uint8_t y, uint8_t *pstr, uint8_t tex
 
 OLED_StatusTypeDef OLED_ON();
 OLED_StatusTypeDef OLED_OFF();
+
+void OLED_Refresh_GSRAM_CallBefore();  // 刷新缓存之前调用的函数
+void OLED_Refresh_GSRAM_CallAfter();   // 刷新缓存之后调用的函数
+
+void OLED_WriteCmd_CallBefore();  // 写命令之前调用的函数
+void OLED_WriteCmd_CallAfter();   // 写命令之后调用的函数
 
 #ifdef __cplusplus
 }

@@ -102,4 +102,22 @@ const uint8_t __oled_init_param[] = {0xae,        // 关闭显示屏
 const uint8_t __oled_on_pararm[] = {0x8d, 0x14, 0xaf};
 const uint8_t __oled_off_param[] = {0x8d, 0x10, 0xae};
 #endif
+
+#if defined (__ARMCC_VERSION) && (__ARMCC_VERSION >= 6010050) /* ARM Compiler V6 */
+#ifndef __weak
+#define __weak  __attribute__((weak))
+#endif
+#ifndef __packed
+#define __packed  __attribute__((packed))
+#endif
+#elif defined ( __GNUC__ ) && !defined (__CC_ARM) /* GNU Compiler */
+#ifndef __weak
+#define __weak   __attribute__((weak))
+#endif /* __weak */
+#ifndef __packed
+#define __packed __attribute__((__packed__))
+#endif /* __packed */
+#endif /* __GNUC__ */
+
+#define UNUSED(X) (void)X
 #endif  // OLEDDRIVERPARAM_H
