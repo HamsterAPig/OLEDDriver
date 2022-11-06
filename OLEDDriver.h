@@ -23,7 +23,6 @@ extern "C" {
 void OLED_DelayMS(uint8_t ms);
 #endif
 
-//#define OLED_TRANSMIT_SPI_4
 #ifdef OLED_TRANSMIT_SPI_4
 /**
  * 操作数据选择的IO
@@ -35,6 +34,15 @@ void OLED_setGPIO_DC(uint8_t state);
  * @param state 0表示选中
  */
 void OLED_setGPIO_CS(uint8_t state);
+#endif
+
+#ifdef OLED_TRANSMIT_SPI_4
+#  define OLED_TRANSMIT_MODE_SPI
+#endif
+#ifdef OLED_TRANSMIT_MODE_SPI
+#  ifdef OLED_USING_DMA_TRANSMIT
+void OLED_DMA_TxCpltback();
+#  endif
 #endif
 /**
  * @brief 定义返回常量，方便调试的时候判断状态
@@ -72,7 +80,7 @@ OLED_StatusTypeDef OLED_Transmit(uint16_t DevAddress, uint16_t MemAddress, uint8
  * 将g_oled_buffer里面的内容更新到屏幕中
  * @return OLED Status
  */
-OLED_StatusTypeDef OLED_Reflush_GSRAM();
+OLED_StatusTypeDef OLED_Refresh_GSRAM();
 
 /**
  * 点亮某一个点或者点灭某一个点

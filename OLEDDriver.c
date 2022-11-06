@@ -9,9 +9,6 @@
 #include "codetable.h"
 
 #define CALC_NUM_LENGTH(x) sizeof(x) / sizeof(uint8_t)
-#ifdef OLED_TRANSMIT_SPI_4
-#  define OLED_TRANSMIT_MODE_SPI
-#endif
 
 /**
  * OLED 写命令函数，作用于仅限于本文件
@@ -28,6 +25,10 @@ OLED_StatusTypeDef OLED_WriteCmd(uint8_t *pcmd, uint16_t total);
  */
 uint8_t g_oled_buffer[OLED_PAGE_SIZE][OLED_PIX_WIDTH];
 uint8_t g_command_buffer[OLED_COMMAND_BUFFER_LENGTH];
+#ifdef OLED_USING_DMA_TRANSMIT
+uint8_t g_buffer_page = 0;
+uint8_t gb_call_refresh = 0;
+#endif
 
 /**
  * OLED初始化函数
@@ -42,10 +43,11 @@ OLED_StatusTypeDef OLED_Init(void)
  * 将g_oled_buffer里面的内容更新到屏幕中
  * @return OLED Status
  */
-OLED_StatusTypeDef OLED_Reflush_GSRAM()
+#ifndef OLED_USING_DMA_TRANSMIT
+OLED_StatusTypeDef OLED_Refresh_GSRAM()
 {
   OLED_StatusTypeDef status;
-#if OLED_NO_WAIT_TRANSMIT_PROCESS
+#ifdef OLED_NO_WAIT_TRANSMIT_PROCESS
   OLED_DelayMS(1);
 #endif
 #ifdef OLED_TRANSMIT_MODE_SPI
@@ -60,6 +62,16 @@ OLED_StatusTypeDef OLED_Reflush_GSRAM()
 #endif
   return status;
 }
+#else
+OLED_StatusTypeDef OLED_Refresh_GSRAM()
+{
+  OLED_StatusTypeDef status;
+}
+void OLED_DMA_TxCpltback()
+{
+
+}
+#endif
 
 /**
  * 点亮某一个点或者点灭某一个点
@@ -93,7 +105,7 @@ OLED_StatusTypeDef OLED_Fill(uint8_t state)
 {
   OLED_StatusTypeDef status;
   memset(g_oled_buffer, state, sizeof(uint8_t) * OLED_PIX_WIDTH * OLED_PAGE_SIZE);
-  status = OLED_Reflush_GSRAM();
+  status = OLED_Refresh_GSRAM();
   return status;
 }
 
@@ -177,7 +189,7 @@ OLED_StatusTypeDef OLED_WriteCmd(uint8_t *pcmd, uint16_t total)
    */
   for (int i = 0; i < total; ++i) g_command_buffer[i] = pcmd[i];
   OLED_StatusTypeDef status = OLED_Transmit(OLED_PHY_ADDRESS, 0x00, g_command_buffer, total);
-#if OLED_NO_WAIT_TRANSMIT_PROCESS
+#ifdef OLED_NO_WAIT_TRANSMIT_PROCESS
   OLED_DelayMS(1);
 #endif
 #ifdef OLED_TRANSMIT_MODE_SPI
