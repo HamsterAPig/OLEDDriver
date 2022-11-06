@@ -1,12 +1,13 @@
 # OLED Driver
 
-> 本仓库用于提供一个OLED屏幕的通用驱动框架库
+> 本仓库用于提供一个OLED屏幕的通用驱动框架库，考虑了许久还是决定把关键传输函数的实现细节暴露给用户，由用户实现。
 
 ## Support IC
 
 > 目前支持的IC列表，如果你有需要也可以提`ISSUE`
 
 * SSD1306
+* SH1106
 
 # 使用说明
 
@@ -46,7 +47,52 @@ void OLED_DelayMS(uint8_t ms) { HAL_Delay(ms); }
 
 ```
 
+## SPI
 
+### 不启用DMA
+
+1. 包含本项目头文件`OLEDDriver.h`
+2. 在外设初始化函数调用的后面加上`OLED_Init()`以便初始化`OLED`
+
+> 注意：为了保证设备总线能够及时把初始化数据发送出去，这里必须予以一定的延时，一般给100ms
+
+3. 用户自己实现一些前调函数，相关函数如下
+
+```C
+void OLED_WriteCmd_CallBefore()
+{
+  OLED_setGPIO_DC(0);
+  OLED_setGPIO_CS(0);
+}
+void OLED_Refresh_GSRAM_CallBefore()
+{
+  OLED_setGPIO_DC(1);
+  OLED_setGPIO_CS(0);
+}
+```
+
+4. 用户实现传输函数，这里使用`STM32 HAL`作为示范
+
+```c
+OLED_StatusTypeDef OLED_Transmit(uint16_t DevAddress, uint16_t MemAddress, uint8_t *pData, uint16_t Size, uint8_t mode)
+{
+  if (0 == mode) {
+    OLED_WriteCmd_CallBefore();
+    HAL_SPI_Transmit(&hspi1, pData, Size, 0xff);
+  } else {
+    uint8_t __write_cmd[] = {0xb0, 0x02, 0x10};
+    for (int i = 0; i < OLED_PAGE_SIZE; ++i) {
+      OLED_WriteCmd_CallBefore();
+      HAL_SPI_Transmit(&hspi1, __write_cmd, 3, 0xff);
+      OLED_Refresh_GSRAM_CallBefore();
+      HAL_SPI_Transmit(&hspi1, (pData + OLED_PIX_WIDTH * i), OLED_PIX_WIDTH, 0xff);
+      __write_cmd[0]++;
+    }
+  }
+}
+```
+
+至此，SPI不适用DMA的驱动移植完毕
 
 ## 编译器相关
 
