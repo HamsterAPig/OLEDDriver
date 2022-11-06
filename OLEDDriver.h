@@ -14,8 +14,12 @@ extern "C" {
 #include <stdint.h>
 
 #define OLED_PHY_ADDRESS 0x78  // I2C 物理地址
+#ifndef OLED_PIX_WIDTH
 #define OLED_PIX_WIDTH 128     // OLED屏幕横向像素
+#endif
+#ifndef OLED_PIX_HEIGHT
 #define OLED_PIX_HEIGHT 64     // OLED屏幕纵向像素
+#endif
 
 #define OLED_PAGE_SIZE OLED_PIX_HEIGHT / 8  // OLED驱动存储页数
 

@@ -81,11 +81,19 @@ OLED_StatusTypeDef OLED_Refresh_GSRAM()
   } else
     status = OLED_Transmit(OLED_PHY_ADDRESS, 0x40, (uint8_t *)g_oled_buffer, OLED_PIX_WIDTH * OLED_PAGE_SIZE);
 #  else
+  /**
+   * @note 按页写
+   * @note 为了方便后期写参数，这里对原来的参数数组进行了拷贝
+   */
+  uint8_t oled_write_param[CALC_NUM_LENGTH(__oled_write_param)];
+  for (int i = 0; i  < CALC_NUM_LENGTH(__oled_write_param); ++i)
+    oled_write_param[i] = __oled_write_param[i];
+
   for (int i = 0; i < OLED_PAGE_SIZE; ++i) {
-    uint8_t _page_param[] = {0xb0 + i, 0x00, 0x10};
-    OLED_WriteCmd(_page_param, CALC_NUM_LENGTH(_page_param));
-    uint8_t  *ptemp = g_oled_buffer[i];
+    OLED_WriteCmd(oled_write_param, CALC_NUM_LENGTH(oled_write_param));
+    uint8_t *ptemp = g_oled_buffer[i];
     status = OLED_Transmit(OLED_PHY_ADDRESS, 0x40, (uint8_t *)ptemp, OLED_PIX_WIDTH);
+    oled_write_param[0]++;
   }
 #  endif
 
