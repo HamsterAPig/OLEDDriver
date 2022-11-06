@@ -12,22 +12,24 @@ extern "C" {
 #endif  // C++ Support
 #include <memory.h>
 #include <stdint.h>
+#include "oled_user_def.h"
 
+#ifndef OLED_PHY_ADDRESS
 #define OLED_PHY_ADDRESS 0x78  // I2C 物理地址
+#endif
 #ifndef OLED_PIX_WIDTH
 #define OLED_PIX_WIDTH 128     // OLED屏幕横向像素
 #endif
 #ifndef OLED_PIX_HEIGHT
 #define OLED_PIX_HEIGHT 64     // OLED屏幕纵向像素
 #endif
-
 #define OLED_PAGE_SIZE OLED_PIX_HEIGHT / 8  // OLED驱动存储页数
 
 #ifdef OLED_NO_WAIT_TRANSMIT_PROCESS
 void OLED_DelayMS(uint8_t ms);
 #endif
 
-#ifdef OLED_TRANSMIT_SPI_4
+#ifdef OLED_TRANSMIT_MODE_SPI
 /**
  * 操作数据选择的IO
  * @param state 0表示拉低,1表示拉高
@@ -40,11 +42,6 @@ void OLED_setGPIO_DC(uint8_t state);
 void OLED_setGPIO_CS(uint8_t state);
 #endif
 
-#define OLED_TRANSMIT_SPI_4
-#define OLED_USING_DMA_TRANSMIT
-#ifdef OLED_TRANSMIT_SPI_4
-#  define OLED_TRANSMIT_MODE_SPI
-#endif
 #ifdef OLED_TRANSMIT_MODE_SPI
 #  ifdef OLED_USING_DMA_TRANSMIT
 void OLED_DMA_TxCpltback();

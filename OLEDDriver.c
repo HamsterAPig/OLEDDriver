@@ -52,7 +52,7 @@ OLED_StatusTypeDef OLED_Refresh_GSRAM()
 #  endif
 #  ifdef OLED_TRANSMIT_MODE_SPI
   OLED_setGPIO_CS(0);
-#    ifdef OLED_TRANSMIT_SPI_4
+#    ifdef OLED_TRANSMIT_MODE_SPI
   OLED_setGPIO_DC(1);
 #    endif
 #  endif
@@ -65,11 +65,11 @@ OLED_StatusTypeDef OLED_Refresh_GSRAM()
 #else
 OLED_StatusTypeDef OLED_Refresh_GSRAM()
 {
-#  ifdef OLED_TRANSMIT_MODE_SPI
+#  ifdef OLED_ENABLE_PIN_CS
   OLED_setGPIO_CS(0);
-#    ifdef OLED_TRANSMIT_SPI_4
+#  endif
+#  ifdef OLED_ENABLE_PIN_DC
   OLED_setGPIO_DC(1);
-#    endif
 #  endif
 
   OLED_StatusTypeDef status;
@@ -100,8 +100,10 @@ OLED_StatusTypeDef OLED_Refresh_GSRAM()
   }
 #  endif
 
-#  ifndef OLED_USING_DMA_TRANSMIT
+#  ifdef OLED_ENABLE_PIN_CS
+#    ifndef OLED_USING_DMA_TRANSMIT
   OLED_setGPIO_CS(1);
+#    endif
 #  endif
   return status;
 }
@@ -183,7 +185,7 @@ OLED_StatusTypeDef OLED_ShowStr(uint8_t x, uint8_t y, uint8_t *pstr, uint8_t tex
       while (pstr[pstr_index] != '\0') {
         charter = pstr[pstr_index] - 32;
         if (x > OLED_PIX_WIDTH - 2) {
-#if OLED_ENABLE_WRAP
+#ifdef OLED_ENABLE_WRAP
           x = 0;
           y++;
 #else
@@ -199,7 +201,7 @@ OLED_StatusTypeDef OLED_ShowStr(uint8_t x, uint8_t y, uint8_t *pstr, uint8_t tex
       while (pstr[pstr_index] != '\0') {
         charter = pstr[pstr_index] - 32;
         if (x > OLED_PIX_WIDTH - 8) {
-#if OLED_ENABLE_WRAP
+#ifdef OLED_ENABLE_WRAP
           x = 0;
           y += 2;
 #else
@@ -227,11 +229,11 @@ OLED_StatusTypeDef OLED_OFF() { return OLED_WriteCmd((uint8_t *)__oled_off_param
  */
 OLED_StatusTypeDef OLED_WriteCmd(uint8_t *pcmd, uint16_t total)
 {
-#ifdef OLED_TRANSMIT_MODE_SPI
+#ifdef OLED_ENABLE_PIN_CS
   OLED_setGPIO_CS(0);
-#  ifdef OLED_TRANSMIT_SPI_4
+#endif
+#ifdef OLED_ENABLE_PIN_DC
   OLED_setGPIO_DC(0);
-#  endif
 #endif
   /**
    * @note 拷贝一份原有数据防止函数退出后，pcmd指向的地址失效
@@ -242,7 +244,7 @@ OLED_StatusTypeDef OLED_WriteCmd(uint8_t *pcmd, uint16_t total)
 #ifdef OLED_NO_WAIT_TRANSMIT_PROCESS
   OLED_DelayMS(1);
 #endif
-#ifndef OLED_USING_DMA_TRANSMIT
+#ifndef OLED_ENABLE_PIN_CS
   OLED_setGPIO_CS(1);
 #endif
   return status;

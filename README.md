@@ -36,6 +36,17 @@ void OLED_DelayMS(uint8_t ms) { HAL_Delay(ms); }
 ```
 
 3. 在主循环前初始化OLED，函数名为`OLED_Init()`
+3. 把目录下的`oled_user_def_template.h`重命名为`oled_user_def.h`，选择对应驱动即可，这里用`SSD1306`作为示范，以下内容就是启用`DMA`传输的`I2C`操作示范
+
+```
+#define __USING_SSD1306
+
+#define OLED_ENABLE_WRAP
+#define OLED_USING_DMA_TRANSMIT
+
+```
+
+
 
 ## 编译器相关
 
