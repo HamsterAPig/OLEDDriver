@@ -94,6 +94,56 @@ OLED_StatusTypeDef OLED_Transmit(uint16_t DevAddress, uint16_t MemAddress, uint8
 
 至此，SPI不适用DMA的驱动移植完毕
 
+## 启用DMA传输
+
+> 考虑到使用的`SH1106`芯片无法设置水平寻址模式，页寻址需要多次发送，DMA传输的时候如果使用while等待总线空闲相当于没有使用DMA，因为CPU一直在等待。这里采用DMA传输完成回调函数，使用两个全局状态变量
+
+具体步骤参考`SPI 普通传输`的1~3步，第四步需要修改的代码为
+
+```c
+uint8_t g_oled_transmit_count = 0;       // 回调函数计数
+uint8_t gb_oled_transmit_data_mode = 0;  // 确定是由于传输数据过程中触发的传输完成中断
+OLED_StatusTypeDef OLED_Transmit(uint16_t DevAddress, uint16_t MemAddress, uint8_t *pData, uint16_t Size, uint8_t mode)
+{
+  if (0 == mode) {
+    OLED_WriteCmd_CallBefore();
+    HAL_SPI_Transmit_DMA(&hspi1, pData, Size);
+  } else {
+    gb_oled_transmit_data_mode = 1;
+    if (0 == g_oled_transmit_count % 2) {
+      uint8_t __write_cmd[] = {0xb0, 0x02, 0x10};
+      OLED_WriteCmd_CallBefore();
+      __write_cmd[0] += g_oled_transmit_count / 2;
+      HAL_SPI_Transmit_DMA(&hspi1,__write_cmd, 3);
+    } else {
+      OLED_Refresh_GSRAM_CallBefore();
+      HAL_SPI_Transmit_DMA(&hspi1, (pData + OLED_PIX_WIDTH * ((g_oled_transmit_count - 1) / 2)), OLED_PIX_WIDTH);
+    }
+  }
+}
+
+void HAL_SPI_TxCpltCallback(SPI_HandleTypeDef *hspi)
+{
+  if (hspi == &hspi1 && 1 == gb_oled_transmit_data_mode) {
+    g_oled_transmit_count++;
+    if (g_oled_transmit_count / 2 >= OLED_PAGE_SIZE) {
+      gb_oled_transmit_data_mode = 0;
+      g_oled_transmit_count = 0;
+      return;
+    }
+    OLED_Transmit(0,0,(uint8_t *)g_oled_buffer, 0,1);
+  }
+}
+```
+
+## 其它
+
+这里也可以考虑使用`RTOS`，使用事件标志位做任务状态，避免CPU资源的浪费
+
+简单的说就是在每一次发送一页数据之后，挂起任务
+
+进入中断之后重新唤醒发送任务
+
 ## 编译器相关
 
 ### Keil
